@@ -1,0 +1,28 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://bookspud.cnk04umagcb9.ap-northeast-2.rds.amazonaws.com:3306/bookspud
+    username: root
+    password: ${spring.datasource.prod_password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+# S3
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: bookspud-bucket
+    stack:
+      auto: false
+    credentials:
+      secret-key: ${cloud.aws.credentials.secret-key}
+      access-key: ${cloud.aws.credentials.access-key}
