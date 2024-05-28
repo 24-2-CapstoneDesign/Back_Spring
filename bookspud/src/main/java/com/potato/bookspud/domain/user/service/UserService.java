@@ -62,6 +62,10 @@ public class UserService {
         );
     }
 
+    public Long getUserIdFromAccessToken(String accessToken) {
+        return jwtTokenProvider.getUserFromJwt(accessToken);
+    }
+
     @Transactional
     public void deleteUser(final Long id) {
         User user = userRepository.findById(id)
