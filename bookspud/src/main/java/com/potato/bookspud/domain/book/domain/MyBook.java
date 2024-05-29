@@ -25,8 +25,7 @@ public class MyBook extends BaseEntity {
 
     private Integer emotion;
 
-    @Builder.Default
-    private Boolean completed = false;
+    private Boolean completed;
 
     private Integer finalPage;
 
