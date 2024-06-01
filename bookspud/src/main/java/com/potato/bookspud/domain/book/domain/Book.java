@@ -11,10 +11,11 @@ import lombok.*;
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "bookId")
+    @Column(name = "book_id")
     private Long id;
 
-    @Column(nullable = false)
+    @NonNull
+    @Column(unique = true)
     private String isbn;
 
     private String title;
