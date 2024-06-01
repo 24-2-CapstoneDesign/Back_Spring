@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@NoArgsConstructor
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Book {
     @Id

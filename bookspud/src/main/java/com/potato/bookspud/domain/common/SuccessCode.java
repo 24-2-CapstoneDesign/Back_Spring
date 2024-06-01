@@ -17,7 +17,6 @@ public enum SuccessCode {
     DELETE_BOOK_SUCCESS(OK, "책 삭제에 성공했습니다."),
     READ_RECOMMENDATION_BOOK_SUCCESS(OK, "추천 책 조회에 성공했습니다.");
 
-
     private final HttpStatus httpStatus;
     String message;
 
