@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,6 +19,9 @@ public enum ErrorCode {
     // 403 FORBIDDEN
 
     // 404 NOT FOUND
+    NOT_FOUND_RECENT_BOOK_EXCEPTION(NOT_FOUND, "RecentBook이 존재하지 않습니다."),
+    NOT_FOUND_RECENT_USER_EXCEPTION(NOT_FOUND, "RecentUser가 존재하지 않습니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러가 발생했습니다.");
