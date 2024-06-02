@@ -10,6 +10,7 @@ import com.potato.bookspud.domain.user.dto.response.AccessTokenGetSuccess;
 import com.potato.bookspud.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -62,8 +63,12 @@ public class UserService {
         );
     }
 
-    public Long getUserIdFromAccessToken(String accessToken) {
-        return jwtTokenProvider.getUserFromJwt(accessToken);
+    public User getUserFromAccessToken(String accessToken) {
+        Long userId = jwtTokenProvider.getUserFromJwt(accessToken);
+        // id 값으로 user 찾기
+        return userRepository.findById(userId)
+                // 임시 exception 처리
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id"));
     }
 
     @Transactional
