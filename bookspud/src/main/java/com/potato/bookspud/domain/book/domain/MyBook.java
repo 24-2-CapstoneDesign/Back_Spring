@@ -27,14 +27,23 @@ public class MyBook extends BaseEntity {
 
     private Emotion emotion;
 
-    private Boolean completed;
+    private Integer totalPage;
 
     private Integer finalPage;
+
+    private Boolean completed;
 
     @Builder
     public MyBook(Book book, User user){
         this.book = book;
         this.user = user;
+        this.finalPage = 0;
+        this.totalPage = 0;
         this.completed = false;
+    }
+
+    public void updateProcess(Integer totalPage, Integer finalPage){
+        this.totalPage = totalPage;
+        this.finalPage = finalPage;
     }
 }

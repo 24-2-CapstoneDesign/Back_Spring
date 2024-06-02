@@ -22,16 +22,14 @@ public class Book {
 
     private String author;
 
-    private String genre;
-
     private String cover;
 
     private Float price;
 
+    private Float salePrice;
+
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    private Integer totalPage;
 
     private String purchaseLink;
 }
