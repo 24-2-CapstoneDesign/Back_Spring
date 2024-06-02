@@ -34,17 +34,17 @@ public class KakaoSocialService {
     private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public LoginSuccessResponse login(final String authorizationCode) {
+    public LoginSuccessResponse login(final String accessToken) {
+//        if (authorizationCode == null || authorizationCode.isEmpty()) {
+//            throw new IllegalArgumentException("Authorization code is null or empty.");
+//        }
+//        String accessToken;
+//        try {
+//            accessToken = getOAuth2Authentication(authorizationCode);
+//        } catch (FeignException e) {
+//            throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
+//        }
 
-        if (authorizationCode == null || authorizationCode.isEmpty()) {
-            throw new IllegalArgumentException("Authorization code is null or empty.");
-        }
-        String accessToken;
-        try {
-            accessToken = getOAuth2Authentication(authorizationCode);
-        } catch (FeignException e) {
-            throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
-        }
         try {
             KakaoUserResponse userResponse = getUserInfo(accessToken);
             refreshTokenService.saveRefreshToken(userResponse.id(), accessToken);
@@ -64,13 +64,13 @@ public class KakaoSocialService {
         return kakaoApiClient.getUserInformation("Bearer " + accessToken);
     }
 
-        private LoginSuccessResponse processUser(KakaoUserResponse userResponse) {
-            if (userService.isExistingUser(userResponse.id())) {
-                return userService.getTokenByUserId(userService.getIdBySocialId(userResponse.id()));
-            } else {
-                return userService.getTokenByUserId(userService.createUser(userResponse));
-            }
+    private LoginSuccessResponse processUser(KakaoUserResponse userResponse) {
+        if (userService.isExistingUser(userResponse.id())) {
+            return userService.getTokenByUserId(userService.getIdBySocialId(userResponse.id()));
+        } else {
+            return userService.getTokenByUserId(userService.createUser(userResponse));
         }
+    }
 
     public KakaoUserResponse getKakaoUser(final String authorizationCode, final String redirectUri) {
         String accessToken = getOAuth2Authentication(authorizationCode);

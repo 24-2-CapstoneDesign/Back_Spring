@@ -20,4 +20,3 @@ spring:
 
 jwt:
   secret: c3ByaW5nLWJvb3QtYXBpLWp3dC1zZWNyZXQta2V5LXN1cGVyLXNlY3JldC15ZXMteWVzLXllcdjeiDNdj=
-

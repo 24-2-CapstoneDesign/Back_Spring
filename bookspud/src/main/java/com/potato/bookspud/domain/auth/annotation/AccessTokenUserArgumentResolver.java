@@ -1,5 +1,6 @@
 package com.potato.bookspud.domain.auth.annotation;
 
+import com.potato.bookspud.domain.user.domain.User;
 import com.potato.bookspud.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -32,7 +33,7 @@ public class AccessTokenUserArgumentResolver implements HandlerMethodArgumentRes
             throw new IllegalArgumentException("Authorization header is missing or invalid.");
         }
         String accessToken = authorizationHeader.substring("Bearer ".length());
-        Long userId = userService.getUserIdFromAccessToken(accessToken);
-        return userId;
+        User user = userService.getUserFromAccessToken(accessToken);
+        return user;
     }
 }

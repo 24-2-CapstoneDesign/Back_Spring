@@ -1,5 +1,6 @@
 package com.potato.bookspud.domain.auth.jwt;
 
+import com.potato.bookspud.domain.auth.handler.UserAuthentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.potato.bookspud.domain.auth.JwtValidationType.VALID_JWT;
+import static com.potato.bookspud.domain.auth.jwt.JwtValidationType.VALID_JWT;
 
 @Component
 @RequiredArgsConstructor
