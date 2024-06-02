@@ -12,7 +12,9 @@ public record BookResponse(
         String title,
         String author,
         String cover,
-        String updatedAt
+        String updatedAt,
+        Integer totalPage,
+        Integer finalPage
 ) {
     public static BookResponse of (MyBook mybook){
         return BookResponse.builder()
@@ -21,6 +23,8 @@ public record BookResponse(
                 .author(mybook.getBook().getAuthor())
                 .cover(mybook.getBook().getCover())
                 .updatedAt(getUpdatedAtToString(mybook.getUpdatedAt()))
+                .totalPage(mybook.getTotalPage())
+                .finalPage(mybook.getFinalPage())
                 .build();
     }
 
