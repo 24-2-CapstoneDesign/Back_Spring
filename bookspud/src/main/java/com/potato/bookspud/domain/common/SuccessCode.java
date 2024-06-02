@@ -15,7 +15,10 @@ public enum SuccessCode {
     READ_BOOK_SUCCESS(OK, "책 조회에 성공했습니다."),
     READ_BOOK_COUNT_SUCCESS(OK, "책 숫자 조회에 성공했습니다."),
     DELETE_BOOK_SUCCESS(OK, "책 삭제에 성공했습니다."),
-    READ_RECOMMENDATION_BOOK_SUCCESS(OK, "추천 책 조회에 성공했습니다.");
+    READ_RECOMMENDATION_BOOK_SUCCESS(OK, "추천 책 조회에 성공했습니다."),
+    READ_VOCA_GUIDE_SUCCESS(OK, "단어 가이드 조회에 성공했습니다."),
+    READ_QUESTION_GUIDE_SUCCESS(OK, "질문 가이드 조회에 성공했습니다.");
+
 
     private final HttpStatus httpStatus;
     String message;
