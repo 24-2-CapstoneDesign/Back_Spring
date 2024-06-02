@@ -7,11 +7,10 @@ public record BookCreateRequest (
         String isbn,
         String title,
         String author,
-        String genre,
         String cover,
         Float price,
+        Float salePrice,
         String content,
-        Integer totalPage,
         String purchaseLink
 ){
 }

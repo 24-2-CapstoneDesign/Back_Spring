@@ -3,6 +3,7 @@ package com.potato.bookspud.domain.book.service;
 import com.potato.bookspud.domain.book.domain.Book;
 import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.book.dto.request.BookCreateRequest;
+import com.potato.bookspud.domain.book.dto.request.BookUpdateRequest;
 import com.potato.bookspud.domain.book.dto.response.*;
 import com.potato.bookspud.domain.book.exception.RecentBookException;
 import com.potato.bookspud.domain.book.repository.BookRepository;
@@ -35,11 +36,10 @@ public class BookService {
                             .isbn(request.isbn())
                             .title(request.title())
                             .author(request.author())
-                            .genre(request.genre())
                             .cover(request.cover())
                             .price(request.price())
+                            .salePrice(request.price())
                             .content(request.content())
-                            .totalPage(request.totalPage())
                             .purchaseLink(request.purchaseLink())
                             .build();
                     return bookRepository.save(newBook);
@@ -55,29 +55,27 @@ public class BookService {
     }
 
     public BookDetailResponse getMyBookById(Long id){
-        final MyBook mybook = myBookRepository.getById(id);
-        return BookDetailResponse.of(mybook);
+        final Book book = bookRepository.getById(id);
+        return BookDetailResponse.of(book);
     }
 
     public void deleteMyBookById(Long id){
         myBookRepository.deleteById(id);
     }
 
-    public BooksResponse getMyBooksByEmotion(Emotion emotion, User user){
-        final List<BookResponse> myBooks = myBookRepository.findAllByEmotionAndUser(emotion, user)
+    public void updateMyBookProcess(Long id, BookUpdateRequest request){
+        MyBook myBook = myBookRepository.getById(id);
+        myBook.updateProcess(request.totalPage(), request.finalPage());
+    }
+
+    public BooksResponse getMyBooks(User user){
+        List<BookResponse> mybooks = myBookRepository.findAllByUser(user)
                 .stream()
                 .map(BookResponse::of)
                 .toList();
 
-        return BooksResponse.of(myBooks);
+        return BooksResponse.of(mybooks);
     }
-
-    public BookCountResponse getMyBookCountsByEmotion(Emotion emotion, User user){
-        long count = myBookRepository.countByEmotionAndUser(emotion, user);
-        return BookCountResponse.of(emotion, count);
-    }
-
-
 
     public RecentBooksResponse getRecentBooksByBook(User user){
         // 사용자의 책 중 updatedAt이 가장 최근인 책 찾기
