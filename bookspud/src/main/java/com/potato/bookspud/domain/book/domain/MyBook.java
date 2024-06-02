@@ -1,6 +1,7 @@
 package com.potato.bookspud.domain.book.domain;
 
 import com.potato.bookspud.domain.common.BaseEntity;
+import com.potato.bookspud.domain.common.Emotion;
 import com.potato.bookspud.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class MyBook extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,7 +25,7 @@ public class MyBook extends BaseEntity {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    private Integer emotion;
+    private Emotion emotion;
 
     private Boolean completed;
 
