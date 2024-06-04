@@ -22,7 +22,7 @@ public enum ErrorCode {
     NOT_FOUND_RECENT_BOOK_EXCEPTION(NOT_FOUND, "RecentBook이 존재하지 않습니다."),
     NOT_FOUND_RECENT_USER_EXCEPTION(NOT_FOUND, "RecentUser가 존재하지 않습니다."),
     NOT_FOUND_USER_EXCEPTION(NOT_FOUND, "존재하지 않는 사용자입니다."),
-    NOT_FOUND_BOOKMARK_EXCEPTION(NOT_FOUND, "존재하지 않는 북마크입니다."),
+    NOT_FOUND_BOOKMARK_EXCEPTION(NOT_FOUND, "해당 북마크가 존재하지 않습니다."),
     NOT_FOUND_MYBOOK_EXCEPTION(NOT_FOUND, "MyBook에 추가되지 않은 책입니다."),
 
     // 500 INTERNAL SERVER ERROR
