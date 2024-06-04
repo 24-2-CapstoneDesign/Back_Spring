@@ -1,5 +1,6 @@
 package com.potato.bookspud.domain.bookmark.service;
 
+import com.potato.bookspud.domain.book.domain.Book;
 import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.book.exception.InvalidMyBookException;
 import com.potato.bookspud.domain.book.repository.MyBookRepository;
@@ -7,12 +8,14 @@ import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookmark.dto.request.BookMarkCreateRequest;
 import com.potato.bookspud.domain.bookmark.dto.response.BookMarkDetailResponse;
 import com.potato.bookspud.domain.bookmark.dto.response.BookMarkOthersResponse;
+import com.potato.bookspud.domain.bookmark.dto.response.RandomBookMarkResponse;
 import com.potato.bookspud.domain.bookmark.exception.InvalidBookMarkException;
 import com.potato.bookspud.domain.bookmark.repository.BookMarkRepository;
 import com.potato.bookspud.domain.common.Emotion;
 import com.potato.bookspud.domain.user.domain.User;
 import com.potato.bookspud.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +30,9 @@ import static com.potato.bookspud.domain.common.ErrorCode.NOT_FOUND_MYBOOK_EXCEP
 @RequiredArgsConstructor
 public class BookMarkService {
 
+
     private final BookMarkRepository bookMarkRepository;
     private final MyBookRepository myBookRepository;
-    private final UserRepository userRepository;
 
     // 북마크 등록
     @Transactional
@@ -72,23 +75,6 @@ public class BookMarkService {
                 .collect(Collectors.toList());
     }
 
-    // 감정별 북마크 조회 - 필요X
-    /*public List<EmotionBookMarkResponse> getBookMarksByEmotion(Emotion emotion) {
-        List<MyBook> myBooks = myBookRepository.findByEmotion(emotion);
-        List<EmotionBookMarkResponse> bookMarkResponses = new ArrayList<>();
-        System.out.println("Found MyBooks: " + myBooks.size()); // 로그 추가
-
-        for (MyBook myBook : myBooks) {
-            List<BookMark> bookMarks = bookMarkRepository.findByMyBookId(myBook.getId());
-            System.out.println("Found BookMarks for MyBook ID " + myBook.getId() + ": " + bookMarks.size()); // 로그 추가
-            for (BookMark bookMark : bookMarks) {
-                bookMarkResponses.add(EmotionBookMarkResponse.of(bookMark, myBook.getBook()));
-            }
-        }
-        System.out.println("Total BookMarkResponses: " + bookMarkResponses.size()); // 로그 추가
-        return bookMarkResponses;
-    }*/
-
     // 특정 책의 특정 감정을 가진 북마크 목록 조회 - 추천책 하나 선택 시 사용
     public List<BookMarkOthersResponse> getBookMarksByBookIdAndMostUsedEmotion(Long bookId, User user) {
         // 특정 책에 대한 북마크 목록 조회
@@ -120,5 +106,23 @@ public class BookMarkService {
             bookMarkCount.put(emotion, count);
         }
         return bookMarkCount;
+    }
+
+    // 북마크 랜덤 조회
+    public RandomBookMarkResponse getRandomBookMark(Emotion emotion, User user) {
+        List<BookMark> randomBookMarks = bookMarkRepository.findRandomByEmotionAndUser(emotion, user, PageRequest.of(0, 1));
+        if (!randomBookMarks.isEmpty()) {
+            BookMark randomBookMark = randomBookMarks.get(0);
+            Book book = randomBookMark.getMyBook().getBook();
+
+            return new RandomBookMarkResponse(
+                    randomBookMark.getEmotion(),
+                    randomBookMark.getPhase(),
+                    book.getTitle(),
+                    book.getCover()
+            );
+        } else {
+            throw new InvalidBookMarkException(NOT_FOUND_BOOKMARK_EXCEPTION);
+        }
     }
 }

@@ -3,10 +3,7 @@ package com.potato.bookspud.domain.bookmark.controller;
 import com.potato.bookspud.domain.auth.annotation.AccessTokenUser;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookmark.dto.request.BookMarkCreateRequest;
-import com.potato.bookspud.domain.bookmark.dto.response.BookMarkCreateResponse;
-import com.potato.bookspud.domain.bookmark.dto.response.BookMarkDetailResponse;
-import com.potato.bookspud.domain.bookmark.dto.response.BookMarkOthersResponse;
-import com.potato.bookspud.domain.bookmark.dto.response.EmotionBookMarkResponse;
+import com.potato.bookspud.domain.bookmark.dto.response.*;
 import com.potato.bookspud.domain.bookmark.service.BookMarkService;
 import com.potato.bookspud.domain.common.BaseResponse;
 import com.potato.bookspud.domain.common.Emotion;
@@ -59,6 +56,12 @@ public class BookMarkController {
     @GetMapping("/count")
     public BaseResponse<Map<Emotion, Long>> getBookMarkCountByEmotion(@AccessTokenUser User user) {
         Map<Emotion, Long> result = bookMarkService.getBookMarkCountByEmotion(user);
+        return BaseResponse.success(SuccessCode.READ_BOOKMARK_SUCCESS, result);
+    }
+
+    @GetMapping("/random/{emotion}")
+    public BaseResponse<RandomBookMarkResponse> getRandomBookMark(@PathVariable Emotion emotion, @AccessTokenUser User user) {
+        RandomBookMarkResponse result = bookMarkService.getRandomBookMark(emotion, user);
         return BaseResponse.success(SuccessCode.READ_BOOKMARK_SUCCESS, result);
     }
 }
