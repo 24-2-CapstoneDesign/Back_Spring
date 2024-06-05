@@ -15,11 +15,6 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 172.31.35.101
-      port: 6379
-
-  data:
-    redis:
       host: localhost
       port: 6379
 
