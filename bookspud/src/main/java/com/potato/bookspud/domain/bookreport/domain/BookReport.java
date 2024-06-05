@@ -29,7 +29,8 @@ public class BookReport extends BaseEntity {
     String finalReport;
 
     @Builder
-    public BookReport (String argument){
+    public BookReport (MyBook mybook, String argument){
+        this.mybook = mybook;
         this.argument = argument;
     }
 }

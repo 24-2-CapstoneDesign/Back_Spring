@@ -66,6 +66,7 @@ public class BookService {
     public void updateMyBookProcess(Long id, BookUpdateRequest request){
         MyBook myBook = myBookRepository.getById(id);
         myBook.updateProcess(request.totalPage(), request.finalPage());
+        myBookRepository.save(myBook);
     }
 
     public BooksResponse getMyBooks(User user){

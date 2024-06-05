@@ -34,16 +34,16 @@ public class KakaoSocialService {
     private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public LoginSuccessResponse login(final String authorizationCode) {
-        if (authorizationCode == null || authorizationCode.isEmpty()) {
-            throw new IllegalArgumentException("Authorization code is null or empty.");
-        }
-        String accessToken;
-        try {
-            accessToken = getOAuth2Authentication(authorizationCode);
-        } catch (FeignException e) {
-            throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
-        }
+    public LoginSuccessResponse login(final String accessToken) {
+//        if (authorizationCode == null || authorizationCode.isEmpty()) {
+//            throw new IllegalArgumentException("Authorization code is null or empty.");
+//        }
+//        String accessToken;
+//        try {
+//            accessToken = getOAuth2Authentication(authorizationCode);
+//        } catch (FeignException e) {
+//            throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
+//        }
 
         try {
             KakaoUserResponse userResponse = getUserInfo(accessToken);

@@ -1,8 +1,10 @@
 package com.potato.bookspud.domain.bookreport.service;
 
+import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookreport.domain.BookReport;
 import com.potato.bookspud.domain.bookreport.domain.BookReportQuestion;
+import com.potato.bookspud.domain.bookreport.dto.request.AnswersRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
@@ -42,7 +44,7 @@ public class BookReportService {
         String result = chatGPTController.makeQuestions(info);
         List<String> questions = parseResult(result);
         // 질문 DB 저장
-        createBookReportQuestion(questions);
+        createBookReportQuestion(bookReport, questions);
         return QuestionsResponse.of(questions);
     }
 
@@ -66,24 +68,24 @@ public class BookReportService {
                 .toList();
     }
 
-    public ArgumentCreateResponse createBookReport(ArgumentCreateRequest request){
+    public ArgumentCreateResponse createBookReport(MyBook myBook, ArgumentCreateRequest request){
         BookReport bookReport = BookReport.builder()
+                .mybook(myBook)
                 .argument(request.argument())
                 .build();
         bookReportRepository.save(bookReport);
         return ArgumentCreateResponse.of(bookReport.getId());
     }
 
-    private void createBookReportQuestion(List<String> questions){
-        BookReportQuestion bookReportQuestion = BookReportQuestion.builder()
+    private void createBookReportQuestion(BookReport bookReport, List<String> questions){
+        BookReportQuestion newBookReportQuestion = BookReportQuestion.builder()
+                .bookReport(bookReport)
                 .introQuestion(questions.get(0))
                 .bodyQuestion(questions.get(1))
                 .conclusionQuestion(questions.get(2))
                 .build();
-        bookReportQuestionRepository.save(bookReportQuestion);
+        bookReportQuestionRepository.save(newBookReportQuestion);
     }
-
-
 
     private List<String> makeInfo(BookReport bookReport){
         List<String> info = new ArrayList<>();
@@ -97,5 +99,11 @@ public class BookReportService {
         info.add(argumentInfo);
 
         return info;
+    }
+
+    public void createAnswers(Long id, AnswersRequest request){
+        BookReportQuestion bookReportQuestion = bookReportQuestionRepository.findByBookReportId(id);
+        bookReportQuestion.updateAnswers(request.introAnswer(), request.bodyAnswer(), request.conclusionAnswer());
+        bookReportQuestionRepository.save(bookReportQuestion);
     }
 }

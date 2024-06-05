@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface BookReportQuestionRepository extends JpaRepository<BookReportQuestion, Long>{
+    BookReportQuestion findByBookReportId(Long bookReportId);
 }

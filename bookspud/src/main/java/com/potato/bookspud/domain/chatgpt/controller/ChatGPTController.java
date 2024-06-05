@@ -12,7 +12,7 @@ public class ChatGPTController {
     private final ChatGPTService chatGPTService;
 
     public String makeArguments(List<String> info){
-        String instruction = "이 정보들을 바탕으로 한 문장으로 된 논점을 5개 생성해줘. 이때 각 논점은 개행문자로 구분해서 줘";
+        String instruction = "이 정보들을 바탕으로 한 독서록을 쓸건데, 제목을 지어줬으면 좋겠어. 간단한 주제를 담은 제목을 5개 생성해줘. 이때 각 문장은 개행문자로 구분해서 줘. 숫자는 붙이지 말고 제목만 줘";
         return chatGPTService.chat(info, instruction);
     }
 

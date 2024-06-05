@@ -13,7 +13,8 @@ public class BookReportQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_report_id")
     private BookReport bookReport;
 
     String introQuestion;
@@ -29,9 +30,16 @@ public class BookReportQuestion {
     String conclusionAnswer;
 
     @Builder
-    public BookReportQuestion(String introQuestion, String bodyQuestion, String conclusionQuestion){
+    public BookReportQuestion(BookReport bookReport, String introQuestion, String bodyQuestion, String conclusionQuestion){
+        this.bookReport = bookReport;
         this.introQuestion = introQuestion;
         this.bodyQuestion = bodyQuestion;
         this.conclusionQuestion = conclusionQuestion;
+    }
+
+    public void updateAnswers(String introAnswer, String bodyAnswer, String conclusionAnswer){
+        this.introAnswer = introAnswer;
+        this.bodyAnswer = bodyAnswer;
+        this.conclusionAnswer = conclusionAnswer;
     }
 }
