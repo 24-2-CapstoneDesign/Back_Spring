@@ -20,4 +20,9 @@ public class ChatGPTController {
         String instruction = "이 정보들을 바탕으로 서론, 본론, 결론으로 나누어서 질문을 각각 1개씩 만들어줘. 이때 각 질문은 개행문자로 구분해서 줘";
         return chatGPTService.chat(info, instruction);
     }
+
+    public String makeDraft(List<String> info){
+        String instruction = "이 답변들을 요약한 독서록의 초안을 질문 답변 말고, 서론 본론 결론 나누지 말고, 줄글로 독서록 같이 간단하게 작성해줘. 글만 간단하게 줘";
+        return chatGPTService.chat(info, instruction);
+    }
 }
