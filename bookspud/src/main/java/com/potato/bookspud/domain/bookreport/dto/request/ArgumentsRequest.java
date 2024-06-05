@@ -1,4 +1,4 @@
-package com.potato.bookspud.domain.chatgpt.dto.request;
+package com.potato.bookspud.domain.bookreport.dto.request;
 
 import com.potato.bookspud.domain.book.domain.Book;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;

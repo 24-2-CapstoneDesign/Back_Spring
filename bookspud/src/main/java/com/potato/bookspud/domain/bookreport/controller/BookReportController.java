@@ -1,14 +1,54 @@
 package com.potato.bookspud.domain.bookreport.controller;
 
+import com.potato.bookspud.domain.auth.annotation.AccessTokenUser;
+import com.potato.bookspud.domain.book.domain.Book;
+import com.potato.bookspud.domain.book.service.BookService;
+import com.potato.bookspud.domain.bookmark.domain.BookMark;
+import com.potato.bookspud.domain.bookmark.service.BookMarkService;
+import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
+import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
+import com.potato.bookspud.domain.bookreport.service.BookReportService;
 import com.potato.bookspud.domain.common.BaseResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import com.potato.bookspud.domain.user.domain.User;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.potato.bookspud.domain.common.SuccessCode.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/bookreport")
 public class BookReportController {
-    @GetMapping("/api/{id}/argument")
-    public BaseResponse<ArgumentsResponse> getArguments(@PathVariable Long id){
+    private final BookReportService bookReportService;
+    private final BookService bookService;
+    private final BookMarkService bookMarkService;
 
-
-
+    @GetMapping("/{id}/argument")
+    public BaseResponse<ArgumentsResponse> getArguments(@PathVariable Long id, @AccessTokenUser User user){
+        Book book = bookService.getBookByMybookId(id);
+        List<BookMark> bookMarks = bookMarkService.getBookMarksByUserandBook(book, user);
+        val result = bookReportService.getArguments(book, bookMarks);
+        return BaseResponse.success(READ_ARGUMENTS_SUCCESS, result);
     }
+
+    @PostMapping("/argument")
+    public BaseResponse<ArgumentCreateResponse> createArgument (@RequestBody ArgumentCreateRequest request){
+        val result = bookReportService.createBookReport(request);
+        return BaseResponse.success(CREATE_BOOK_REPORT_SUCCESS, result);
+    }
+
+    @GetMapping("/{id}/question")
+    public BaseResponse<QuestionsResponse> getQuestions(@PathVariable Long id){
+        val result = bookReportService.getQuestions(id);
+        return BaseResponse.success(READ_QUESTIONS_SUCCESS, result);
+    }
+
+
+
+
+
 }
