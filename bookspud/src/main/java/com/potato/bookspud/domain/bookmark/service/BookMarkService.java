@@ -125,4 +125,8 @@ public class BookMarkService {
             throw new InvalidBookMarkException(NOT_FOUND_BOOKMARK_EXCEPTION);
         }
     }
+
+    public List<BookMark> getBookMarksByUserandBook(MyBook myBook, User user){
+        return bookMarkRepository.findByMyBookAndUser(myBook, user);
+    }
 }

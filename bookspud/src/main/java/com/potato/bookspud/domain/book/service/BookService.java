@@ -113,4 +113,8 @@ public class BookService {
 
         return RecentBooksResponse.of(recentBooksFromOtherUser);
     }
+
+    public MyBook getMyBookByMybookId(Long id){
+        return myBookRepository.getById(id);
+    }
 }

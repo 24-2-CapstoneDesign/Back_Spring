@@ -23,7 +23,10 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final String[] AUTH_WHITELIST = {
-            "/api/login/kakao"
+            "/api/login/kakao",
+            "/swagger",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
 
     @Bean
