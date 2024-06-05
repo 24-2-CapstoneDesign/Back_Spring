@@ -19,6 +19,8 @@ public enum SuccessCode {
     READ_ARGUMENTS_SUCCESS(OK, "논점 목록 조회에 성공했습니다."),
     CREATE_BOOK_REPORT_SUCCESS(OK, "논점 생성에 성공했습니다."),
     READ_QUESTIONS_SUCCESS(OK, "질문 목록 조회에 성공했습니다."),
+    CREATE_DRAFT_SUCCESS(OK, "초안 생성에 성공했습니다."),
+    CREATE_FINAL_SUCCESS(OK, "최종본 생성에 성공했습니다."),
     READ_VOCA_GUIDE_SUCCESS(OK, "단어 가이드 조회에 성공했습니다."),
     READ_QUESTION_GUIDE_SUCCESS(OK, "질문 가이드 조회에 성공했습니다."),
     CREATE_BOOKMARK_SUCCESS(OK, "북마크 생성에 성공하였습니다."),

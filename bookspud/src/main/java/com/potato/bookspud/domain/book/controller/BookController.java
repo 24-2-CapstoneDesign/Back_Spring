@@ -32,7 +32,7 @@ public class BookController {
 
     @Operation(summary = "개별 책 조회", description = "추천 책에서 책의 상세 정보를 조회하는 API")
     @GetMapping("/book/{bookId}")
-    public BaseResponse<BookDetailResponse> getBookDetail(@PathVariable Long bookId, @AccessTokenUser User user){
+    public BaseResponse<BookDetailResponse> getBookDetail(@PathVariable Long bookId){
         val result = bookService.getMyBookById(bookId);
         return BaseResponse.success(READ_BOOK_SUCCESS, result);
     }

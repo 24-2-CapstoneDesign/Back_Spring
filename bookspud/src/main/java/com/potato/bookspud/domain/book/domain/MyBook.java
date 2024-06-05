@@ -25,6 +25,7 @@ public class MyBook extends BaseEntity {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @Enumerated(value = EnumType.STRING)
     private Emotion emotion;
 
     private Integer totalPage;

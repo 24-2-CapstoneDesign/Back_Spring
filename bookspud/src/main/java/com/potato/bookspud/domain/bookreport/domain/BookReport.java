@@ -23,13 +23,26 @@ public class BookReport extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String draft;
 
-    Boolean completed;
+    @Enumerated(value = EnumType.STRING)
+    Status status;
 
     @Column(columnDefinition = "TEXT")
     String finalReport;
 
     @Builder
-    public BookReport (String argument){
+    public BookReport (MyBook mybook, String argument){
+        this.mybook = mybook;
         this.argument = argument;
+        this.status = Status.BLANK;
+    }
+
+    public void updateDraft(String draft){
+        this.draft = draft;
+        this.status = Status.DRAFT;
+    }
+
+    public void updateFinal(String finalReport){
+        this.finalReport = finalReport;
+        this.status = Status.FINAL;
     }
 }

@@ -1,13 +1,15 @@
 package com.potato.bookspud.domain.bookreport.service;
 
+import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookreport.domain.BookReport;
-import com.potato.bookspud.domain.bookreport.domain.BookReportQuestion;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
+import com.potato.bookspud.domain.bookreport.dto.request.DraftCreateRequest;
+import com.potato.bookspud.domain.bookreport.dto.request.FinalCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.DraftResponse;
 import com.potato.bookspud.domain.bookreport.dto.response.QuestionsResponse;
-import com.potato.bookspud.domain.bookreport.repository.BookReportQuestionRepository;
 import com.potato.bookspud.domain.bookreport.repository.BookReportRepository;
 import com.potato.bookspud.domain.chatgpt.controller.ChatGPTController;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentsRequest;
@@ -27,7 +29,6 @@ import java.util.List;
 public class BookReportService {
     private final ChatGPTController chatGPTController;
     private final BookReportRepository bookReportRepository;
-    private final BookReportQuestionRepository bookReportQuestionRepository;
 
     public ArgumentsResponse getArguments(ArgumentsRequest request){
         List<String> info = makeInfo(request);
@@ -41,8 +42,6 @@ public class BookReportService {
         List<String> info = makeInfo(bookReport);
         String result = chatGPTController.makeQuestions(info);
         List<String> questions = parseResult(result);
-        // 질문 DB 저장
-        createBookReportQuestion(questions);
         return QuestionsResponse.of(questions);
     }
 
@@ -60,31 +59,6 @@ public class BookReportService {
         return info;
     }
 
-    private List<String> parseResult(String result){
-        return Arrays.stream(result.split("\n"))
-                .filter(line -> !line.trim().isEmpty())
-                .toList();
-    }
-
-    public ArgumentCreateResponse createBookReport(ArgumentCreateRequest request){
-        BookReport bookReport = BookReport.builder()
-                .argument(request.argument())
-                .build();
-        bookReportRepository.save(bookReport);
-        return ArgumentCreateResponse.of(bookReport.getId());
-    }
-
-    private void createBookReportQuestion(List<String> questions){
-        BookReportQuestion bookReportQuestion = BookReportQuestion.builder()
-                .introQuestion(questions.get(0))
-                .bodyQuestion(questions.get(1))
-                .conclusionQuestion(questions.get(2))
-                .build();
-        bookReportQuestionRepository.save(bookReportQuestion);
-    }
-
-
-
     private List<String> makeInfo(BookReport bookReport){
         List<String> info = new ArrayList<>();
 
@@ -97,5 +71,56 @@ public class BookReportService {
         info.add(argumentInfo);
 
         return info;
+    }
+
+    private List<String> makeInfo(BookReport bookReport, DraftCreateRequest request){
+        List<String> info = new ArrayList<>();
+
+        String bookInfo = "책 제목은 " + bookReport.getMybook().getBook().getTitle()
+                + "이고, 저자는 " + bookReport.getMybook().getBook().getAuthor();
+        info.add(bookInfo);
+
+        String argumentInfo = "독서록의 주제는 " + bookReport.getArgument();
+        info.add(argumentInfo);
+
+        String qaInfo = "서론과 관련된 질문은 " + request.introQuestion() + "이고, 그에 대한 답변은 " + request.introAnswer()
+                + "이고, 본론과 관련된 질문은 " + request.bodyQuestion() + "이고, 그에 대한 답변은 " + request.bodyAnswer()
+                + "이고, 결론과 관련된 질문은 " + request.conclusionQuestion() + "이고, 그에 대한 답변은 " + request.conclusionAnswer();
+        info.add(qaInfo);
+
+        return info;
+    }
+
+    private List<String> parseResult(String result){
+        return Arrays.stream(result.split("\n"))
+                .filter(line -> !line.trim().isEmpty())
+                .toList();
+    }
+
+    public ArgumentCreateResponse createBookReport(MyBook myBook, ArgumentCreateRequest request){
+        BookReport bookReport = BookReport.builder()
+                .mybook(myBook)
+                .argument(request.argument())
+                .build();
+        bookReportRepository.save(bookReport);
+        return ArgumentCreateResponse.of(bookReport);
+    }
+
+
+    public DraftResponse createDraft(Long id, DraftCreateRequest request){
+        BookReport bookReport = bookReportRepository.getById(id);
+        List<String> info = makeInfo(bookReport, request);
+        String draft = chatGPTController.makeDraft(info);
+
+        bookReport.updateDraft(draft);
+        bookReportRepository.save(bookReport);
+
+        return DraftResponse.of(bookReport);
+    }
+
+    public void createFinal(Long id, FinalCreateRequest request){
+        BookReport bookReport = bookReportRepository.getById(id);
+        bookReport.updateFinal(request.finalReport());
+        bookReportRepository.save(bookReport);
     }
 }
