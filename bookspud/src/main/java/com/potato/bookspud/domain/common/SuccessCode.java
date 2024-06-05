@@ -20,7 +20,11 @@ public enum SuccessCode {
     READ_QUESTION_GUIDE_SUCCESS(OK, "질문 가이드 조회에 성공했습니다."),
     CREATE_BOOKMARK_SUCCESS(OK, "북마크 생성에 성공하였습니다."),
     DELETE_BOOKMARK_SUCCESS(OK, "북마크가 정상적으로 삭제되었습니다."),
-    READ_BOOKMARK_SUCCESS(OK, "북마크 조회에 성공하였습니다.");
+    READ_BOOKMARK_SUCCESS(OK, "북마크 조회에 성공하였습니다."),
+    REGISTER_NICKNAME_SUCCESS(OK, "닉네임 등록에 성공하였습니다"),
+    REGISTER_PROFILE_SUCCESS(OK, "프로필 사진 등록에 성공하였습니다."),
+    GET_POINT_SUCCESS(OK, "포인트 조회에 성공하였습니다."),
+    UPDATE_POINT_SUCCESS(OK, "포인트 업데이트에 성공하였습니다.");
 
     private final HttpStatus httpStatus;
     String message;
