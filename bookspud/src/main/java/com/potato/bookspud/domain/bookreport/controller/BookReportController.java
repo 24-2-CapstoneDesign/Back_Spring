@@ -2,12 +2,15 @@ package com.potato.bookspud.domain.bookreport.controller;
 
 import com.potato.bookspud.domain.auth.annotation.AccessTokenUser;
 import com.potato.bookspud.domain.book.domain.Book;
+import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.book.service.BookService;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookmark.service.BookMarkService;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
+import com.potato.bookspud.domain.bookreport.dto.request.ArgumentsRequest;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.QuestionsResponse;
 import com.potato.bookspud.domain.bookreport.service.BookReportService;
 import com.potato.bookspud.domain.common.BaseResponse;
 import com.potato.bookspud.domain.user.domain.User;
@@ -29,9 +32,9 @@ public class BookReportController {
 
     @GetMapping("/{id}/argument")
     public BaseResponse<ArgumentsResponse> getArguments(@PathVariable Long id, @AccessTokenUser User user){
-        Book book = bookService.getBookByMybookId(id);
-        List<BookMark> bookMarks = bookMarkService.getBookMarksByUserandBook(book, user);
-        val result = bookReportService.getArguments(book, bookMarks);
+        MyBook mybook = bookService.getMyBookByMybookId(id);
+        List<BookMark> bookMarks = bookMarkService.getBookMarksByUserandBook(mybook, user);
+        val result = bookReportService.getArguments(ArgumentsRequest.of(mybook, bookMarks));
         return BaseResponse.success(READ_ARGUMENTS_SUCCESS, result);
     }
 
@@ -46,9 +49,4 @@ public class BookReportController {
         val result = bookReportService.getQuestions(id);
         return BaseResponse.success(READ_QUESTIONS_SUCCESS, result);
     }
-
-
-
-
-
 }

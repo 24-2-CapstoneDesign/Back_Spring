@@ -1,6 +1,7 @@
 package com.potato.bookspud.domain.bookreport.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class BookReportQuestion {
     String conclusionQuestion;
 
     String conclusionAnswer;
+
+    @Builder
+    public BookReportQuestion(String introQuestion, String bodyQuestion, String conclusionQuestion){
+        this.introQuestion = introQuestion;
+        this.bodyQuestion = bodyQuestion;
+        this.conclusionQuestion = conclusionQuestion;
+    }
 }
