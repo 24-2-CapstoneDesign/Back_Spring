@@ -36,7 +36,7 @@ public class KakaoSocialService {
     @Transactional
     public LoginSuccessResponse login(final String authorizationCode) {
 
-        if (authorizationCode == null || authorizationCode.isEmpty()) {
+      if (authorizationCode == null || authorizationCode.isEmpty()) {
             throw new IllegalArgumentException("Authorization code is null or empty.");
         }
         String accessToken;

@@ -27,3 +27,4 @@ cloud:
       bucket: bookspud
     stack:
       auto: false
+

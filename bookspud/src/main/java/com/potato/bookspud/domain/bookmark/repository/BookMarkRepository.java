@@ -1,5 +1,7 @@
 package com.potato.bookspud.domain.bookmark.repository;
 
+import com.potato.bookspud.domain.book.domain.Book;
+import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.common.Emotion;
 import com.potato.bookspud.domain.user.domain.User;
@@ -20,4 +22,6 @@ public interface BookMarkRepository extends JpaRepository<BookMark, Long> {
 
     @Query("SELECT bm FROM BookMark bm WHERE bm.emotion = :emotion AND bm.user = :user ORDER BY function('RAND') ")
     List<BookMark> findRandomByEmotionAndUser(@Param("emotion") Emotion emotion, @Param("user") User user, Pageable pageable);
+
+    List<BookMark> findByMyBookAndUser(MyBook mybook, User user);
 }
