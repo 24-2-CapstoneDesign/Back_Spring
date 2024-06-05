@@ -2,9 +2,12 @@ package com.potato.bookspud.domain.bookreport.service;
 
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookreport.domain.BookReport;
+import com.potato.bookspud.domain.bookreport.domain.BookReportQuestion;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
 import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.QuestionsResponse;
+import com.potato.bookspud.domain.bookreport.repository.BookReportQuestionRepository;
 import com.potato.bookspud.domain.bookreport.repository.BookReportRepository;
 import com.potato.bookspud.domain.chatgpt.controller.ChatGPTController;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentsRequest;
@@ -24,6 +27,7 @@ import java.util.List;
 public class BookReportService {
     private final ChatGPTController chatGPTController;
     private final BookReportRepository bookReportRepository;
+    private final BookReportQuestionRepository bookReportQuestionRepository;
 
     public ArgumentsResponse getArguments(ArgumentsRequest request){
         List<String> info = makeInfo(request);
@@ -37,13 +41,15 @@ public class BookReportService {
         List<String> info = makeInfo(bookReport);
         String result = chatGPTController.makeQuestions(info);
         List<String> questions = parseResult(result);
+        // 질문 DB 저장
+        createBookReportQuestion(questions);
         return QuestionsResponse.of(questions);
     }
 
     private List<String> makeInfo(ArgumentsRequest request){
         List<String> info = new ArrayList<>();
 
-        String bookInfo = "책 제목은 " + request.book().getTitle() + "이고, 저자는 " + request.book().getAuthor() + " 이고, 책 소개는 " + request.book().getContent();
+        String bookInfo = "책 제목은 " + request.myBook().getBook().getTitle() + "이고, 저자는 " +  request.myBook().getBook().getAuthor() + " 이고, 책 소개는 " +  request.myBook().getBook().getContent();
         info.add(bookInfo);
 
         for (BookMark bookMark : request.bookMarks()){
@@ -66,6 +72,15 @@ public class BookReportService {
                 .build();
         bookReportRepository.save(bookReport);
         return ArgumentCreateResponse.of(bookReport.getId());
+    }
+
+    private void createBookReportQuestion(List<String> questions){
+        BookReportQuestion bookReportQuestion = BookReportQuestion.builder()
+                .introQuestion(questions.get(0))
+                .bodyQuestion(questions.get(1))
+                .conclusionQuestion(questions.get(2))
+                .build();
+        bookReportQuestionRepository.save(bookReportQuestion);
     }
 
 
