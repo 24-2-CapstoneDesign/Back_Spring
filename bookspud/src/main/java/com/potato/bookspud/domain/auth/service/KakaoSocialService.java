@@ -35,7 +35,8 @@ public class KakaoSocialService {
 
     @Transactional
     public LoginSuccessResponse login(final String authorizationCode) {
-        if (authorizationCode == null || authorizationCode.isEmpty()) {
+
+      if (authorizationCode == null || authorizationCode.isEmpty()) {
             throw new IllegalArgumentException("Authorization code is null or empty.");
         }
         String accessToken;
@@ -44,7 +45,6 @@ public class KakaoSocialService {
         } catch (FeignException e) {
             throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
         }
-
         try {
             KakaoUserResponse userResponse = getUserInfo(accessToken);
             refreshTokenService.saveRefreshToken(userResponse.id(), accessToken);
@@ -70,10 +70,5 @@ public class KakaoSocialService {
         } else {
             return userService.getTokenByUserId(userService.createUser(userResponse));
         }
-    }
-
-    public KakaoUserResponse getKakaoUser(final String authorizationCode, final String redirectUri) {
-        String accessToken = getOAuth2Authentication(authorizationCode);
-        return kakaoApiClient.getUserInformation("Bearer " + accessToken);
     }
 }

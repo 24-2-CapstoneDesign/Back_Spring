@@ -1,17 +1,27 @@
 package com.potato.bookspud.domain.user.service;
 
+import com.potato.bookspud.domain.auth.client.KakaoAccount;
+import com.potato.bookspud.domain.auth.client.KakaoUserProfile;
 import com.potato.bookspud.domain.auth.dto.response.KakaoUserResponse;
 import com.potato.bookspud.domain.auth.dto.response.LoginSuccessResponse;
 import com.potato.bookspud.domain.auth.handler.UserAuthentication;
 import com.potato.bookspud.domain.auth.jwt.JwtTokenProvider;
 import com.potato.bookspud.domain.auth.jwt.redis.RefreshTokenService;
+import com.potato.bookspud.domain.common.ErrorCode;
+import com.potato.bookspud.domain.s3.service.S3Service;
 import com.potato.bookspud.domain.user.domain.User;
+import com.potato.bookspud.domain.user.dto.request.NicknameRegisterRequest;
+import com.potato.bookspud.domain.user.dto.request.ProfileRegisterRequest;
 import com.potato.bookspud.domain.user.dto.response.AccessTokenGetSuccess;
+import com.potato.bookspud.domain.user.exception.InvalidUserException;
 import com.potato.bookspud.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import java.util.Optional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,14 +30,15 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
+    private final S3Service s3Service;
 
     public Long createUser(final KakaoUserResponse userResponse) {
-        User user = User.of(
-                userResponse.kakaoAccount().profile().nickname(),
-                userResponse.kakaoAccount().profile().profileImageUrl(),
-                userResponse.kakaoAccount().profile().accountEmail(),
-                userResponse.id()
-        );
+
+        String birthyear = Optional.ofNullable(userResponse.kakaoAccount())
+                .map(KakaoAccount::profile)
+                .map(KakaoUserProfile::birthyear)
+                .orElse(null);
+        User user = User.of(birthyear, userResponse.id());
         return userRepository.save(user).getId();
     }
 
@@ -72,9 +83,35 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(final Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 사용자가 존재하지 않습니다."));
+    public void deleteUser(User user) {
+        userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당하는 사용자가 존재하지 않습니다."));
         userRepository.delete(user);
+    }
+
+    public void registerNickname(NicknameRegisterRequest nicknameRegisterRequest, User user) {
+        userRepository.findById(user.getId()).orElseThrow(() -> new InvalidUserException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        user.setNickname(nicknameRegisterRequest.nickname());
+        userRepository.save(user);
+    }
+
+    public String registerProfileImage(ProfileRegisterRequest profileRegisterRequest, User user) throws IOException {
+        userRepository.findById(user.getId()).orElseThrow(()-> new InvalidUserException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        String profileImageUrl = s3Service.uploadImage(profileRegisterRequest.image());
+        user.setProfileImageUrl(profileImageUrl);
+        userRepository.save(user);
+        return profileImageUrl;
+    }
+
+    public Integer getPoint(User user) {
+        userRepository.findById(user.getId()).orElseThrow(() -> new InvalidUserException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        return user.getPoint();
+    }
+
+    public void updatePoint(Integer delta, User user) {
+        userRepository.findById(user.getId()).orElseThrow(() -> new InvalidUserException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        Integer currentPoint = user.getPoint();
+        Integer updatedPoint = currentPoint + delta;
+        user.setPoint(updatedPoint);
+        userRepository.save(user);
     }
 }

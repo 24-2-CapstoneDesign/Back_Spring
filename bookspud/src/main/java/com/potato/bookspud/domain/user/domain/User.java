@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -17,23 +18,15 @@ public class User extends BaseEntity {
 
     private String nickname;
     private String profileImageUrl;
-    private String accountEmail;
+    private String birthyear;
+    private Integer point = 0; // 기본값 설정
     private Long socialId;
 
-    @Builder
-    public User(String nickname, String profileImageUrl, String accountEmail, Long socialId) {
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-        this.accountEmail = accountEmail;
-        this.socialId = socialId;
-    }
-
-    public static User of(String nickname, String profileImageUrl, String accountEmail, Long socialId) {
+    public static User of(String birthyear, Long socialId) {
         return User.builder()
-                .nickname(nickname)
-                .profileImageUrl(profileImageUrl)
-                .accountEmail(accountEmail)
+                .birthyear(birthyear)
                 .socialId(socialId)
+                .point(0)
                 .build();
     }
 }

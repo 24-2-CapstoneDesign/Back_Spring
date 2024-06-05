@@ -18,4 +18,13 @@ spring:
       host: localhost
       port: 6379
 
+# S3
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: bookspud
+    stack:
+      auto: false
 
