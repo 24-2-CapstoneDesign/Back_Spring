@@ -13,7 +13,6 @@ import com.potato.bookspud.domain.bookmark.exception.InvalidBookMarkException;
 import com.potato.bookspud.domain.bookmark.repository.BookMarkRepository;
 import com.potato.bookspud.domain.common.Emotion;
 import com.potato.bookspud.domain.user.domain.User;
-import com.potato.bookspud.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -92,7 +91,7 @@ public class BookMarkService {
         List<BookMarkOthersResponse> bookMarksResponses = new ArrayList<>();
         for (BookMark bookMark : bookMarks) {
             if (bookMark.getEmotion() == mostUsedEmotion && bookMark.getUser().getId() != user.getId()) {
-                bookMarksResponses.add(new BookMarkOthersResponse(user.getNickname(), bookMark.getEmotion(), bookMark.getPhase(), bookMark.getMemo()));
+                bookMarksResponses.add(new BookMarkOthersResponse(bookMark.getUser().getNickname(), bookMark.getUser().getProfileImageUrl(), bookMark.getEmotion(), bookMark.getPhase(), bookMark.getMemo()));
             }
         }
         return bookMarksResponses;
