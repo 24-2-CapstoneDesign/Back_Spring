@@ -4,6 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record FinalCreateRequest(
-        String finalReport
+        String introEmotion,
+        String bodyEmotion,
+        String conclusionEmotion
 ) {
 }

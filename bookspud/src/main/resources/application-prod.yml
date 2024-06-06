@@ -24,9 +24,6 @@ cloud:
     region:
       static: ap-northeast-2
     s3:
-      bucket: bookspud-bucket
+      bucket: bookspud
     stack:
       auto: false
-    credentials:
-      secret-key: ${cloud.aws.credentials.secret-key}
-      access-key: ${cloud.aws.credentials.access-key}

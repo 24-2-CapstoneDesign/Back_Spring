@@ -38,20 +38,20 @@ public class KakaoSocialService {
 
       if (authorizationCode == null || authorizationCode.isEmpty()) {
             throw new IllegalArgumentException("Authorization code is null or empty.");
-        }
-        String accessToken;
-        try {
-            accessToken = getOAuth2Authentication(authorizationCode);
-        } catch (FeignException e) {
-            throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
-        }
-        try {
-            KakaoUserResponse userResponse = getUserInfo(accessToken);
-            refreshTokenService.saveRefreshToken(userResponse.id(), accessToken);
-            return processUser(userResponse);
-        } catch (FeignException e) {
-            throw new IllegalArgumentException("Failed to get user information with access token: " + accessToken, e);
-        }
+      }
+      String accessToken;
+      try {
+          accessToken = getOAuth2Authentication(authorizationCode);
+      } catch (FeignException e) {
+          throw new IllegalArgumentException("Failed to get access token with authorization code: " + authorizationCode, e);
+      }
+      try {
+          KakaoUserResponse userResponse = getUserInfo(accessToken);
+          refreshTokenService.saveRefreshToken(userResponse.id(), accessToken);
+          return processUser(userResponse);
+      } catch (FeignException e) {
+          throw new IllegalArgumentException("Failed to get user information with access token: " + accessToken, e);
+      }
     }
 
     private String getOAuth2Authentication(final String authorizationCode) {

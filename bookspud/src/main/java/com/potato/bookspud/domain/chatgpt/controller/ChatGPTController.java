@@ -22,7 +22,7 @@ public class ChatGPTController {
     }
 
     public String makeDraft(List<String> info){
-        String instruction = "이 답변들을 요약한 독서록의 초안을 질문 답변 말고, 서론 본론 결론 나누지 말고, 줄글로 독서록 같이 간단하게 작성해줘. 글만 간단하게 줘";
+        String instruction = "이 답변들을 요약한 독서록의 초안을 질문 답변 말고, 줄글로 서론, 본론, 결론 나눠서 독서록 같이 간단하게 작성해줘. 서론: 이런거 붙이지말고, 서론-본론-결론 순서대로 글만 간단하게 줘. 서론, 본론, 결론은 개행문자로 구분해서 줘";
         return chatGPTService.chat(info, instruction);
     }
 }

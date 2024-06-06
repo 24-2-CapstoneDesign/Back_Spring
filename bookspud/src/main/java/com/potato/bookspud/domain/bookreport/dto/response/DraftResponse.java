@@ -1,15 +1,19 @@
 package com.potato.bookspud.domain.bookreport.dto.response;
 
-import com.potato.bookspud.domain.bookreport.domain.BookReport;
+import com.potato.bookspud.domain.bookreport.domain.BookReportContent;
 import lombok.Builder;
 
 @Builder
 public record DraftResponse(
-        String draft
+        String intro,
+        String body,
+        String conclusion
 ) {
-    public static DraftResponse of (BookReport bookReport){
+    public static DraftResponse of (BookReportContent bookReportContent){
         return DraftResponse.builder()
-                .draft(bookReport.getDraft())
+                .intro(bookReportContent.getIntro())
+                .body(bookReportContent.getBody())
+                .conclusion(bookReportContent.getConclusion())
                 .build();
     }
 }
