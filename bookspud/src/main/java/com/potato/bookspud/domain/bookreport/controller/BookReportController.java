@@ -9,10 +9,7 @@ import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentsRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.DraftCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.FinalCreateRequest;
-import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.DraftResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.QuestionsResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.*;
 import com.potato.bookspud.domain.bookreport.service.BookReportService;
 import com.potato.bookspud.domain.common.BaseResponse;
 import com.potato.bookspud.domain.user.domain.User;
@@ -45,7 +42,7 @@ public class BookReportController {
     }
 
     @Operation(summary = "논점 선택", description = "논점 선택하는 API")
-    @PostMapping("{myBookId}/argument")
+    @PostMapping("/{myBookId}/argument")
     public BaseResponse<ArgumentCreateResponse> createArgument (@PathVariable Long myBookId, @RequestBody ArgumentCreateRequest request){
         MyBook myBook = bookService.getMyBookByMybookId(myBookId);
         val result = bookReportService.createBookReport(myBook, request);
@@ -60,7 +57,7 @@ public class BookReportController {
     }
 
     @Operation(summary = "초안 생성", description = "초안 생성하는 API (GPT)")
-    @PatchMapping("/{id}/draft")
+    @PostMapping("/{id}/draft")
     public BaseResponse<DraftResponse> createDraft(@PathVariable Long id, @RequestBody DraftCreateRequest request){
         val result = bookReportService.createDraft(id, request);
         return BaseResponse.success(CREATE_DRAFT_SUCCESS, result);
@@ -71,6 +68,20 @@ public class BookReportController {
     public BaseResponse createFinal(@PathVariable Long id, @RequestBody FinalCreateRequest request){
         bookReportService.createFinal(id, request);
         return BaseResponse.success(CREATE_FINAL_SUCCESS);
+    }
+
+    @Operation(summary = "독후감 목록 조회", description = "독후감 목록 조회하는 API")
+    @GetMapping
+    public BaseResponse<BookReportsResponse> getBookReports(@AccessTokenUser User user){
+        val result = bookReportService.getBookReports(user);
+        return BaseResponse.success(READ_BOOK_REPORT_SUCCESS, result);
+    }
+
+    @Operation(summary = "독후감 상세 조회", description = "독후감 상세 조회하는 API (내용만)")
+    @GetMapping("/{id}")
+    public BaseResponse<BookReportDetailResponse> getBookReportDetail(@PathVariable Long id){
+        val result = bookReportService.getBookReportDetail(id);
+        return BaseResponse.success(READ_BOOK_REPORT_SUCCESS, result);
     }
 
 }

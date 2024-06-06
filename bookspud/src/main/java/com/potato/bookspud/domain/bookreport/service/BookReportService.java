@@ -3,16 +3,17 @@ package com.potato.bookspud.domain.bookreport.service;
 import com.potato.bookspud.domain.book.domain.MyBook;
 import com.potato.bookspud.domain.bookmark.domain.BookMark;
 import com.potato.bookspud.domain.bookreport.domain.BookReport;
+import com.potato.bookspud.domain.bookreport.domain.BookReportContent;
+import com.potato.bookspud.domain.bookreport.domain.Status;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.DraftCreateRequest;
 import com.potato.bookspud.domain.bookreport.dto.request.FinalCreateRequest;
-import com.potato.bookspud.domain.bookreport.dto.response.ArgumentCreateResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.ArgumentsResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.DraftResponse;
-import com.potato.bookspud.domain.bookreport.dto.response.QuestionsResponse;
+import com.potato.bookspud.domain.bookreport.dto.response.*;
+import com.potato.bookspud.domain.bookreport.repository.BookReportContentRepository;
 import com.potato.bookspud.domain.bookreport.repository.BookReportRepository;
 import com.potato.bookspud.domain.chatgpt.controller.ChatGPTController;
 import com.potato.bookspud.domain.bookreport.dto.request.ArgumentsRequest;
+import com.potato.bookspud.domain.user.domain.User;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.List;
 public class BookReportService {
     private final ChatGPTController chatGPTController;
     private final BookReportRepository bookReportRepository;
+    private final BookReportContentRepository bookReportContentRepository;
 
     public ArgumentsResponse getArguments(ArgumentsRequest request){
         List<String> info = makeInfo(request);
@@ -100,6 +102,7 @@ public class BookReportService {
     public ArgumentCreateResponse createBookReport(MyBook myBook, ArgumentCreateRequest request){
         BookReport bookReport = BookReport.builder()
                 .mybook(myBook)
+                .user(myBook.getUser())
                 .argument(request.argument())
                 .build();
         bookReportRepository.save(bookReport);
@@ -110,17 +113,53 @@ public class BookReportService {
     public DraftResponse createDraft(Long id, DraftCreateRequest request){
         BookReport bookReport = bookReportRepository.getById(id);
         List<String> info = makeInfo(bookReport, request);
-        String draft = chatGPTController.makeDraft(info);
+        String result = chatGPTController.makeDraft(info);
+        List<String> draft = parseResult(result);
 
-        bookReport.updateDraft(draft);
-        bookReportRepository.save(bookReport);
+        //BookReportContent 생성
+        BookReportContent bookReportContent = createBookReportContent(bookReport, draft);
 
-        return DraftResponse.of(bookReport);
+        // BookReport status update
+        bookReport.updateStatus(Status.DRAFT);
+
+        return DraftResponse.of(bookReportContent);
+    }
+
+    private BookReportContent createBookReportContent(BookReport bookReport, List<String> draft){
+        BookReportContent newBookReportContent = BookReportContent.builder()
+                .bookReport(bookReport)
+                .intro(draft.get(0))
+                .body(draft.get(1))
+                .conclusion(draft.get(2))
+                .build();
+
+        bookReportContentRepository.save(newBookReportContent);
+        return newBookReportContent;
     }
 
     public void createFinal(Long id, FinalCreateRequest request){
         BookReport bookReport = bookReportRepository.getById(id);
-        bookReport.updateFinal(request.finalReport());
-        bookReportRepository.save(bookReport);
+        updateBookReportContent(bookReport, request);
+        bookReport.updateStatus(Status.FINAL);
+    }
+
+    private void updateBookReportContent(BookReport bookReport, FinalCreateRequest request){
+        BookReportContent bookReportContent = bookReportContentRepository.findByBookReport(bookReport);
+        bookReportContent.updateFinal(request.introEmotion(), request.bodyEmotion(), request.conclusionEmotion());
+        bookReportContentRepository.save(bookReportContent);
+    }
+
+    public BookReportsResponse getBookReports(User user){
+        List<BookReportResponse> bookReports = bookReportRepository.findAllByUser(user)
+                .stream()
+                .map(BookReportResponse::of)
+                .toList();
+        return BookReportsResponse.of(bookReports);
+    }
+
+    public BookReportDetailResponse getBookReportDetail(Long id){
+        BookReport bookReport = bookReportRepository.getById(id);
+        BookReportContent bookReportContent = bookReportContentRepository.findByBookReport(bookReport);
+        return BookReportDetailResponse.of(bookReportContent);
     }
 }
