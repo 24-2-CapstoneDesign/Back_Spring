@@ -58,9 +58,9 @@ public class BookController {
         return BaseResponse.success(READ_BOOK_SUCCESS, result);
     }
 
-    @Operation(summary = "특정 책을 가장 최근 읽은 사람의 다른 책 목록 조회", description = "북투북 추천 책 리스트 조회")
+    @Operation(summary = "추천 책 조회", description = "북투북, 북투유저 추천 책 리스트 조회")
     @GetMapping("/recent/book")
-    public BaseResponse<RecentBooksResponse> getBooksBybook(@AccessTokenUser User user){
+    public BaseResponse<RecentBooksResponse> getRecommendation(@AccessTokenUser User user){
         val result = bookService.getRecentBooksByBook(user);
         return BaseResponse.success(READ_RECOMMENDATION_BOOK_SUCCESS, result);
     }

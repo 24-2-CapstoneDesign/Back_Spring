@@ -10,11 +10,13 @@ import com.potato.bookspud.domain.book.repository.BookRepository;
 import com.potato.bookspud.domain.book.repository.MyBookRepository;
 import com.potato.bookspud.domain.common.Emotion;
 import com.potato.bookspud.domain.user.domain.User;
+import com.potato.bookspud.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.potato.bookspud.domain.common.ErrorCode.NOT_FOUND_RECENT_BOOK_EXCEPTION;
@@ -28,6 +30,7 @@ import static com.potato.bookspud.domain.common.ErrorCode.NOT_FOUND_RECENT_USER_
 public class BookService {
     private final BookRepository bookRepository;
     private final MyBookRepository myBookRepository;
+    private final UserRepository userRepository;
 
     public Book findOrCreateBook(BookCreateRequest request) {
         return bookRepository.findByIsbn(request.isbn())
@@ -79,38 +82,46 @@ public class BookService {
     }
 
     public RecentBooksResponse getRecentBooksByBook(User user){
+        User recentUser = null;
+        List<RecentBookResponse> recentBooksFromOtherUser = new ArrayList<>();
+
         // 사용자의 책 중 updatedAt이 가장 최근인 책 찾기
         MyBook recentBook = myBookRepository.findFirstByUserOrderByUpdatedAtDesc(user);
 
-        // recentBook을 찾지 못한 경우 예외처리
-        if (recentBook == null){
-            throw new RecentBookException(NOT_FOUND_RECENT_BOOK_EXCEPTION);
+        // recentBook이 존재 -> Book to book
+        if (recentBook != null){
+            // 기준이 되는 책의 ID
+            Long recentBookId = recentBook.getBook().getId();
+
+            // 기준이 되는 책을 가진 다른 사용자 찾기
+            List<MyBook> booksWithSameId = myBookRepository.findByBookIdAndUserNotOrderByUpdatedAtDesc(recentBookId, user);
+            MyBook recentBookFromOtherUser = null;
+
+            if(!booksWithSameId.isEmpty()){
+                recentBookFromOtherUser = booksWithSameId.get(0);
+                recentUser = recentBookFromOtherUser.getUser();
+
+                // 해당 사용자의 책 중에서 최근 업데이트 된 5개의 책을 가져오기
+                recentBooksFromOtherUser = myBookRepository.findTop5ByUserAndBookIdNotOrderByUpdatedAtDesc(recentUser, recentBookId)
+                        .stream()
+                        .map(RecentBookResponse::of)
+                        .toList();
+            }
         }
 
-        // 기준이 되는 책의 ID
-        Long recentBookId = recentBook.getBook().getId();
-
-        // 기준이 되는 책을 가진 다른 사용자 찾기
-        List<MyBook> booksWithSameId = myBookRepository.findByBookIdAndUserNotOrderByUpdatedAtDesc(recentBookId, user);
-        User recentUser = null;
-        MyBook recentBookFromOtherUser = null;
-
-        if(!booksWithSameId.isEmpty()){
-            recentBookFromOtherUser = booksWithSameId.get(0);
-            recentUser = recentBookFromOtherUser.getUser();
-        }
-
-        // recentUser를 찾지 못한 경우 예외 처리
+        // recentUser를 찾지 못한 경우, recentBook을 찾지 못한 경우 -> book to user
         if (recentUser == null){
-            throw new RecentBookException(NOT_FOUND_RECENT_USER_EXCEPTION);
-
+            // 현재 user의 birthyear와 같은 다른 user 중 가장 최근 접속한 user 1명 찾기
+            recentUser = userRepository.findTopByBirthyearAndIdNotOrderByUpdatedAtDesc(user.getBirthyear(), user.getId());
+            if (recentUser == null){
+                throw new RecentBookException(NOT_FOUND_RECENT_USER_EXCEPTION);
+            }
+            // 해당 사용자의 책 중에서 최근 업데이트 된 5개의 책을 가져오기
+            recentBooksFromOtherUser = myBookRepository.findTop5ByUserOrderByUpdatedAtDesc(recentUser)
+                    .stream()
+                    .map(RecentBookResponse::of)
+                    .toList();
         }
-
-        // 해당 사용자의 책 중에서 최근 업데이트 된 5개의 책을 가져오기
-        List<RecentBookResponse> recentBooksFromOtherUser = myBookRepository.findTop5ByUserAndBookIdNotOrderByUpdatedAtDesc(recentUser, recentBookId)
-                .stream()
-                .map(RecentBookResponse::of)
-                .toList();
 
         return RecentBooksResponse.of(recentBooksFromOtherUser);
     }
