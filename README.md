@@ -1,12 +1,19 @@
 # BookSpud Server
+> 2024-1 CAU CapstoneDesign
+<br/>
+
 
 ## 🥔 Service Info
 
 <img width="650" alt="image" src="https://github.com/24-2-CapstoneDesign/Back_Spring/assets/80567210/cd2255d2-d8b4-4d6e-83ce-5725dd40bcee" />
 
-<br/><br/>
+<br/>
 
-- **서비스 소개 영상**: 유튜브 링크~!
+#### ✨ 감정을 기반으로 북마크를 기록하고, 독후감을 써봐요! ✨
+
+<br/>
+
+- **서비스 소개 영상** : 유튜브 링크~!
 
 <br/>
 
