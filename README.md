@@ -5,7 +5,7 @@
 
 ## 🥔 Service Info
 
-<img width="650" alt="image" src="https://github.com/24-2-CapstoneDesign/Back_Spring/assets/80567210/cd2255d2-d8b4-4d6e-83ce-5725dd40bcee" />
+<img width="650" alt="image" src="https://github.com/24-2-CapstoneDesign/Back_Spring/assets/80567210/38eae57f-3b4a-41f0-adde-69f8eb1b520a"/>
 
 <br/>
 
