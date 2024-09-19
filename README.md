@@ -13,7 +13,7 @@
 
 <br/>
 
-- **서비스 소개 영상** : 유튜브 링크~!
+- **서비스 소개 영상** : [Youtube](https://youtu.be/X-qgzoJKDME?si=NKuGbQ6zSwxzglNe)
 
 <br/>
 
